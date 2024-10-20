@@ -27,7 +27,7 @@ import com.imps.IMPS.EmailService;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/services", method = RequestMethod.POST)
+@RequestMapping(path = "/services")
 
 public class UserController {
 
