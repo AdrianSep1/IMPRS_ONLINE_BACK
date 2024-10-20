@@ -348,11 +348,11 @@ public class UserController {
             @RequestParam(required = false) String schoolId) {
         
         if (email != null && userRepository.findByEmail(email) != null) {
-            return true; 
+            return userRepository.findBySchoolId(schoolId) != null;
         }
         
         if (schoolId != null && userRepository.findBySchoolId(schoolId) != null) {
-            return true; 
+            return userRepository.findBySchoolId(schoolId) != null;
         }
         
         return false; 
