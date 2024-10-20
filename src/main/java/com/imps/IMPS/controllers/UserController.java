@@ -25,7 +25,7 @@ import com.imps.IMPS.repositories.UserRepository;
 import com.imps.IMPS.EmailService;
 
 
-@CrossOrigin(origins = "https://citimps-online.vercel.app")
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/services")
 public class UserController {
@@ -195,7 +195,7 @@ public class UserController {
     public @ResponseBody String createDefaultUsers(@RequestBody Map<String, String> request) {
         String adminEmail = request.get("adminEmail");
         String headEmail = request.get("headEmail");
-
+    
         // Check if Admin exists
         if (userRepository.findByEmail(adminEmail) == null) {
             User adminUser = new User();
