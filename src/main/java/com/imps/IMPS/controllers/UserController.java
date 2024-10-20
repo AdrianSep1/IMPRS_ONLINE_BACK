@@ -27,7 +27,8 @@ import com.imps.IMPS.EmailService;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/services")
+@RequestMapping(path = "/services", method = RequestMethod.POST)
+
 public class UserController {
 
 
@@ -192,10 +193,16 @@ public class UserController {
     
 
     @PostMapping(path = "/createDefaultUsers")
-    public @ResponseBody String createDefaultUsers(@RequestBody Map<String, String> request) {
-        String adminEmail = request.get("adminEmail");
-        String headEmail = request.get("headEmail");
-    
+public @ResponseBody ResponseEntity<String> createDefaultUsers(@RequestBody Map<String, String> request) {
+    String adminEmail = request.get("adminEmail");
+    String headEmail = request.get("headEmail");
+
+    // Validate input
+    if (adminEmail == null || adminEmail.isEmpty() || headEmail == null || headEmail.isEmpty()) {
+        return ResponseEntity.badRequest().body("Email fields cannot be empty.");
+    }
+
+    try {
         // Check if Admin exists
         if (userRepository.findByEmail(adminEmail) == null) {
             User adminUser = new User();
@@ -211,7 +218,7 @@ public class UserController {
             adminUser.setSchoolId("00-0000-000");
             userRepository.save(adminUser);
         }
-    
+
         // Check if Head exists
         if (userRepository.findByEmail(headEmail) == null) {
             String token = UUID.randomUUID().toString().replaceAll("-", "");
@@ -227,9 +234,14 @@ public class UserController {
             headUser.setSchoolId("00-0000-001");
             userRepository.save(headUser);
         }
-    
-        return "Default admin and head users created if they didn't exist.";
+    } catch (Exception e) {
+        logger.error("Error creating default users: ", e);
+        return ResponseEntity.status(500).body("Internal Server Error");
     }
+
+    return ResponseEntity.ok("Default admin and head users created if they didn't exist.");
+}
+
     
     @PostMapping(path = "/updateAdminVerified")
     public @ResponseBody ServerResponse updateAdminVerified(@RequestBody Map<String, String> request) {
