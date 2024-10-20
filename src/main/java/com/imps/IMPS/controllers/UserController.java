@@ -192,9 +192,8 @@ public class UserController {
     }
     
 
-@PostMapping(path = "/createDefaultUsers")
-public @ResponseBody ResponseEntity<Map<String, String>> createDefaultUsers(@RequestBody Map<String, String> request) {
-    Map<String, String> response = new HashMap<>();
+    @PostMapping(path = "/createDefaultUsers")
+public @ResponseBody String createDefaultUsers(@RequestBody Map<String, String> request) {
     try {
         String adminEmail = request.get("adminEmail");
         String headEmail = request.get("headEmail");
@@ -231,12 +230,10 @@ public @ResponseBody ResponseEntity<Map<String, String>> createDefaultUsers(@Req
             userRepository.save(headUser);
         }
 
-        response.put("message", "Default admin and head users created if they didn't exist.");
-        return ResponseEntity.ok(response);
+        return "Default admin and head users created if they didn't exist.";
     } catch (Exception e) {
         e.printStackTrace(); // Log the exception to the console
-        response.put("error", "Error creating default users: " + e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return "Error creating default users: " + e.getMessage(); // Return a friendly error message
     }
 }
 
