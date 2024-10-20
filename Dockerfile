@@ -1,6 +1,13 @@
-# Use the official OpenJDK image
+# Use the official Maven image to build the project
+FROM maven:3.8.6-openjdk-17 AS build
+WORKDIR /app
+
+# Copy the pom.xml and install dependencies
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Use OpenJDK to run the application
 FROM openjdk:17-jdk-slim
-VOLUME /tmp
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
