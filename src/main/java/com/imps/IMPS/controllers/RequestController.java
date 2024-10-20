@@ -30,7 +30,7 @@ import com.imps.IMPS.repositories.PrintingDetailsRepository;
 import com.imps.IMPS.repositories.PrintingRecordsRepository;
 import com.imps.IMPS.repositories.UserRepository;
 
-@CrossOrigin(origins = "https://citimps-online.vercel.app")
+@CrossOrigin(origins = "https://cit-imps-online.vercel.app")
 @RestController
 @RequestMapping(path = "/requests")
 public class RequestController {

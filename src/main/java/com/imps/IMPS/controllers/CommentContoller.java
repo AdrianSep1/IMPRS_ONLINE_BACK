@@ -22,7 +22,7 @@ import com.imps.IMPS.repositories.CommentRepository;
 import com.imps.IMPS.repositories.NotificationRepository;
 import com.imps.IMPS.repositories.PrintingDetailsRepository;
 
-@CrossOrigin(origins = "https://citimps-online.vercel.app")
+@CrossOrigin(origins = "https://cit-imps-online.vercel.app/")
 @RestController
 @RequestMapping(path = "/comments")
 public class CommentContoller {
