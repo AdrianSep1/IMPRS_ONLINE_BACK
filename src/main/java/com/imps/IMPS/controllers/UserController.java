@@ -193,16 +193,11 @@ public class UserController {
     
 
     @PostMapping(path = "/createDefaultUsers")
-public @ResponseBody ResponseEntity<String> createDefaultUsers(@RequestBody Map<String, String> request) {
-    String adminEmail = request.get("adminEmail");
-    String headEmail = request.get("headEmail");
-
-    // Validate input
-    if (adminEmail == null || adminEmail.isEmpty() || headEmail == null || headEmail.isEmpty()) {
-        return ResponseEntity.badRequest().body("Email fields cannot be empty.");
-    }
-
+public @ResponseBody String createDefaultUsers(@RequestBody Map<String, String> request) {
     try {
+        String adminEmail = request.get("adminEmail");
+        String headEmail = request.get("headEmail");
+
         // Check if Admin exists
         if (userRepository.findByEmail(adminEmail) == null) {
             User adminUser = new User();
@@ -234,13 +229,14 @@ public @ResponseBody ResponseEntity<String> createDefaultUsers(@RequestBody Map<
             headUser.setSchoolId("00-0000-001");
             userRepository.save(headUser);
         }
-    } catch (Exception e) {
-        logger.error("Error creating default users: ", e);
-        return ResponseEntity.status(500).body("Internal Server Error");
-    }
 
-    return ResponseEntity.ok("Default admin and head users created if they didn't exist.");
+        return "Default admin and head users created if they didn't exist.";
+    } catch (Exception e) {
+        e.printStackTrace(); // Log the exception to the console
+        return "Error creating default users: " + e.getMessage(); // Return a friendly error message
+    }
 }
+
 
     
     @PostMapping(path = "/updateAdminVerified")
