@@ -27,7 +27,7 @@ import com.imps.IMPS.repositories.NotificationRepository;
 import com.imps.IMPS.repositories.PrintingRecordsRepository;
 import com.imps.IMPS.repositories.UserRepository;
 
-@CrossOrigin
+@CrossOrigin(origins = "https://citimps-online.vercel.app")
 @RestController
 @RequestMapping(path = "/records")
 public class RecordController {
