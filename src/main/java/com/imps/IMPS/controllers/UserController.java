@@ -196,9 +196,6 @@ public class UserController {
         String adminEmail = request.get("adminEmail");
         String headEmail = request.get("headEmail");
 
-            if (adminEmail == null || headEmail == null) {
-            return ResponseEntity.badRequest().body("Missing adminEmail or headEmail");
-        }
         // Check if Admin exists
         if (userRepository.findByEmail(adminEmail) == null) {
             User adminUser = new User();
