@@ -25,7 +25,7 @@ import com.imps.IMPS.repositories.UserRepository;
 import com.imps.IMPS.EmailService;
 
 
-@CrossOrigin
+@CrossOrigin(origins = "https://citimpsonline.vercel.app")
 @RestController
 @RequestMapping(path = "/services")
 public class UserController {
@@ -33,6 +33,8 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
     private EmailService emailService;
     
     @Autowired
@@ -193,7 +195,10 @@ public class UserController {
     public @ResponseBody String createDefaultUsers(@RequestBody Map<String, String> request) {
         String adminEmail = request.get("adminEmail");
         String headEmail = request.get("headEmail");
-    
+
+            if (adminEmail == null || headEmail == null) {
+            return ResponseEntity.badRequest().body("Missing adminEmail or headEmail");
+        }
         // Check if Admin exists
         if (userRepository.findByEmail(adminEmail) == null) {
             User adminUser = new User();
