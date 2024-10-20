@@ -25,7 +25,7 @@ import com.imps.IMPS.repositories.UserRepository;
 import com.imps.IMPS.EmailService;
 
 
-@CrossOrigin
+@CrossOrigin(origins = "https://cit-imps-online.vercel.app/")
 @RestController
 @RequestMapping(path = "/services", method = RequestMethod.POST)
 
