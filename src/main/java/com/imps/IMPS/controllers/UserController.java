@@ -191,51 +191,51 @@ public class UserController {
         }
     }
     
-
+    @CrossOrigin(origins = "https://imps-online-front.vercel.app")
     @PostMapping(path = "/createDefaultUsers")
-public @ResponseBody String createDefaultUsers(@RequestBody Map<String, String> request) {
-    try {
-        String adminEmail = request.get("adminEmail");
-        String headEmail = request.get("headEmail");
+    public @ResponseBody String createDefaultUsers(@RequestBody Map<String, String> request) {
+        try {
+            String adminEmail = request.get("adminEmail");
+            String headEmail = request.get("headEmail");
 
-        // Check if Admin exists
-        if (userRepository.findByEmail(adminEmail) == null) {
-            User adminUser = new User();
-            String token = UUID.randomUUID().toString().replaceAll("-", "");
-            adminUser.setFirstName("Admin");
-            adminUser.setLastName("User");
-            adminUser.setEmail(adminEmail);
-            adminUser.setPassword(encoder.encode("admin")); 
-            adminUser.setRole("admin");
-            adminUser.setToken(token);
-            adminUser.setIsAdmin(true);
-            adminUser.setUserID("ADMIN001");
-            adminUser.setSchoolId("00-0000-000");
-            userRepository.save(adminUser);
+            // Check if Admin exists
+            if (userRepository.findByEmail(adminEmail) == null) {
+                User adminUser = new User();
+                String token = UUID.randomUUID().toString().replaceAll("-", "");
+                adminUser.setFirstName("Admin");
+                adminUser.setLastName("User");
+                adminUser.setEmail(adminEmail);
+                adminUser.setPassword(encoder.encode("admin")); 
+                adminUser.setRole("admin");
+                adminUser.setToken(token);
+                adminUser.setIsAdmin(true);
+                adminUser.setUserID("ADMIN001");
+                adminUser.setSchoolId("00-0000-000");
+                userRepository.save(adminUser);
+            }
+
+            // Check if Head exists
+            if (userRepository.findByEmail(headEmail) == null) {
+                String token = UUID.randomUUID().toString().replaceAll("-", "");
+                User headUser = new User();
+                headUser.setFirstName("Head");
+                headUser.setLastName("User");
+                headUser.setEmail(headEmail);
+                headUser.setPassword(encoder.encode("head")); 
+                headUser.setRole("head");
+                headUser.setToken(token);
+                headUser.setIsHead(true);
+                headUser.setUserID("HEAD001");
+                headUser.setSchoolId("00-0000-001");
+                userRepository.save(headUser);
+            }
+
+            return "Default admin and head users created if they didn't exist.";
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the exception to the console
+            return "Error creating default users: " + e.getMessage(); // Return a friendly error message
         }
-
-        // Check if Head exists
-        if (userRepository.findByEmail(headEmail) == null) {
-            String token = UUID.randomUUID().toString().replaceAll("-", "");
-            User headUser = new User();
-            headUser.setFirstName("Head");
-            headUser.setLastName("User");
-            headUser.setEmail(headEmail);
-            headUser.setPassword(encoder.encode("head")); 
-            headUser.setRole("head");
-            headUser.setToken(token);
-            headUser.setIsHead(true);
-            headUser.setUserID("HEAD001");
-            headUser.setSchoolId("00-0000-001");
-            userRepository.save(headUser);
-        }
-
-        return "Default admin and head users created if they didn't exist.";
-    } catch (Exception e) {
-        e.printStackTrace(); // Log the exception to the console
-        return "Error creating default users: " + e.getMessage(); // Return a friendly error message
     }
-}
 
 
     
