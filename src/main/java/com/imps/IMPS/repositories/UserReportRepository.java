@@ -12,17 +12,18 @@ public interface UserReportRepository extends CrudRepository<UserReport, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE UserReport ur SET ur.role = :role, ur.status = :status WHERE ur.email = :email")
+    @Query(value = "UPDATE user_report ur SET ur.role = :role, ur.status = :status WHERE ur.email = :email", nativeQuery = true)
     int updateUserReport(@Param("role") String role, @Param("status") String status, @Param("email") String email);
 
+    @Query(value = "SELECT * FROM user_report WHERE email = ?1", nativeQuery = true)
     UserReport findByEmail(String email);
 
-    @Query("SELECT COUNT(u) FROM UserReport u WHERE u.status = 'Accepted'")
+    @Query(value = "SELECT COUNT(*) FROM user_report u WHERE u.status = 'Accepted'", nativeQuery = true)
     int countAcceptedUsers();
 
-    @Query("SELECT COUNT(u) FROM UserReport u WHERE u.status = 'Declined'")
+    @Query(value = "SELECT COUNT(*) FROM user_report u WHERE u.status = 'Declined'", nativeQuery = true)
     int countDeclinedUsers();
     
-    @Query("SELECT COUNT(u) FROM UserReport u")
+    @Query(value = "SELECT COUNT(*) FROM user_report", nativeQuery = true)
     int countAllUsers();
 }

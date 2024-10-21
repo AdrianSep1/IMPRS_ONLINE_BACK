@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.imps.IMPS.models.HomeDetails;
 
-public interface HomeRepository extends CrudRepository<HomeDetails, Integer>{
+public interface HomeRepository extends CrudRepository<HomeDetails, Integer> {
 	
 	@Query(value = "SELECT * FROM home_details WHERE id = ?1", nativeQuery = true)
 	HomeDetails findByID(Integer ID);

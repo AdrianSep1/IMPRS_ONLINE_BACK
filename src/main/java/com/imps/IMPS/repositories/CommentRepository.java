@@ -4,10 +4,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.imps.IMPS.models.Comment;
-import com.imps.IMPS.models.PrintingRecord;
 
-public interface CommentRepository extends CrudRepository<Comment,Integer>{
+public interface CommentRepository extends CrudRepository<Comment, Integer> {
 
-	@Query(value = "SELECT * FROM COMMENT WHERE requestid = ?1 ORDER BY id DESC", nativeQuery = true)
+	@Query(value = "SELECT * FROM comment WHERE requestid = ?1 ORDER BY id DESC", nativeQuery = true)
 	Iterable<Comment> findByRequestID(String requestID);
 }
