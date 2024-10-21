@@ -173,7 +173,7 @@ public class UserController {
                 IMPSUser.setUserID(userID);
                 IMPSUser.setSchoolId(schoolId);
                 IMPSUser.setRole(role);
-
+                IMPSUser.setAdminVerified(true);
                 created.add(IMPSUser);
                 userRepository.save(IMPSUser);
 
