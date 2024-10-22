@@ -63,8 +63,9 @@ public class RecordController {
         Map<String, Integer> counts = new HashMap<>();
         counts.put("pendingRequests", recordRepository.countPendingRequests());
         counts.put("inProgressRequests", recordRepository.countInProgressRequests());
-		counts.put("completedRequests", recordRepository.countCompletedRequests());
-		counts.put("rejectedRequests", recordRepository.countRejectedRequests());
+	counts.put("completedRequests", recordRepository.countCompletedRequests());
+	counts.put("rejectedRequests", recordRepository.countRejectedRequests());
+    	counts.put("claimedRequests", recordRepository.countClaimedRequests());
         return counts;
     }
 
