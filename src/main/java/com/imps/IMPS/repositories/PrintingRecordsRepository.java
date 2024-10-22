@@ -52,7 +52,10 @@ public interface PrintingRecordsRepository extends CrudRepository<PrintingRecord
 
 	@Query(value = "SELECT COUNT(*) FROM printing_record WHERE status = 'In Progress'", nativeQuery = true)
 	int countInProgressRequests();
-
+	
+	@Query(value = "SELECT COUNT(*) FROM printing_record WHERE status = 'Claimed'", nativeQuery = true)
+	int countClaimedRequests();
+	
 	@Query(value = "SELECT COUNT(*) FROM printing_record WHERE status = 'Completed'", nativeQuery = true)
 	int countCompletedRequests();
 
