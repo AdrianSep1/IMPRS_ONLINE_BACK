@@ -148,25 +148,43 @@ public class RecordController {
     	return true;
     }
     
-    @PostMapping(path = "/acceptedStatus")
-    public @ResponseBody boolean setAccepted(@RequestParam String requestID,
-    		@RequestParam String status, @RequestParam String email, @RequestParam String userID, @RequestParam String role,
-    		@RequestParam Date date) {
-    	recordRepository.setNewStatus(requestID, status);
-    	emailService.sendEmail(email, "IMPS | Request #" + requestID + " Status Update","Hello, your printing request with ID #" + requestID + " is now IN PROGRESS. Please wait until the request is completed.");
-    	Notification notification = new Notification(requestID, userID, "Request In Progress!", "Your request has been accepted and is now being processed. Please wait for a notification of its completion.", date, role, false, false, false, false);
-    	notificationRepository.save(notification);
+	@PostMapping(path = "/acceptedStatus")
+	public @ResponseBody boolean setAccepted(@RequestParam String requestID,
+			@RequestParam String status, @RequestParam String email, 
+			@RequestParam String userID, @RequestParam String role,
+			@RequestParam Date date) {
+		
+		// Update the request status
+		recordRepository.setNewStatus(requestID, status);
+		
+		// Send email to the user
+		emailService.sendEmail(email, "IMPS | Request #" + requestID + " Status Update",
+			"Hello, your printing request with ID #" + requestID + " is now IN PROGRESS. Please wait until the request is completed.");
+		
+		// Create a notification for the user
+		Notification userNotification = new Notification(requestID, userID, 
+			"Request In Progress!", 
+			"Your request has been accepted and is now being processed. Please wait for a notification of its completion.", 
+			date, role, false, false, false, false);
+		notificationRepository.save(userNotification);
 
-		User staffUser = userRepository.findStaffUser();
-		String staffUserID = staffUser != null ? staffUser.getUserID() : null;
+		// Fetch all staff users
+		List<User> staffUsers = userRepository.findAllStaffUsers(); // Assuming this method exists in your UserRepository
 
-				
-		Notification staffNotification = new Notification(requestID, staffUserID, "Approved Request to be Process!", 
-		"A new request has been approved. Kindly check and process to complete.", 
-		date, "staff", false, false, true, false);    
-    	notificationRepository.save(staffNotification);
-    	return true;
-    }
+		// Create and save notifications for each staff user
+		for (User staffUser : staffUsers) {
+			String staffUserID = staffUser.getUserID();
+			
+			Notification staffNotification = new Notification(requestID, staffUserID, 
+				"Approved Request to be Processed", 
+				"A new request has been approved. Kindly check and process to complete.", 
+				date, "staff", false, false, true, false);
+			
+			notificationRepository.save(staffNotification);
+		}
+
+		return true;
+	}
     
     @PostMapping(path = "/completedStatus")
     public @ResponseBody boolean setCompleted(@RequestParam String requestID,
