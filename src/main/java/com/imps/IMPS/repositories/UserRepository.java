@@ -20,9 +20,9 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     
     @Query(value = "SELECT * FROM user WHERE is_admin = 1", nativeQuery = true)
     User findAdminUser();
-
+    
     @Query(value = "SELECT * FROM user WHERE is_staff = 1", nativeQuery = true)
-    User findStaffUser();
+    List<User> findAllStaffUsers();
 
     @Query(value = "SELECT * FROM user WHERE email = ?1 AND password = ?2 AND is_admin = 1", nativeQuery = true)
     User checkAdmin(String email, String password);
