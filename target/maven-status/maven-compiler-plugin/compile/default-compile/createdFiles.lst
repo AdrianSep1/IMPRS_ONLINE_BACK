@@ -20,10 +20,12 @@ com\imps\IMPS\controllers\UserController.class
 com\imps\IMPS\models\CommentResponse.class
 com\imps\IMPS\models\HomeDetails.class
 com\imps\IMPS\models\PrintingRecord.class
+com\imps\IMPS\controllers\NotificationHandler.class
 com\imps\IMPS\controllers\NotificationController.class
 com\imps\IMPS\repositories\PrintingDetailsRepository.class
 com\imps\IMPS\models\RequestResponse.class
 com\imps\IMPS\repositories\UserReportRepository.class
 com\imps\IMPS\models\UserReport.class
 com\imps\IMPS\repositories\NotificationRepository.class
+com\imps\IMPS\config\WebSocketConfig.class
 com\imps\IMPS\ImpsApplication.class

@@ -81,6 +81,12 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     @Query(value = "UPDATE user SET email = ?1 WHERE email = ?2", nativeQuery = true)
     int setNewEmail(String newEmail, String email);
     
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM user WHERE email = ?1", nativeQuery = true)
+    void deleteUserByEmail(String email);
+
+
     @Query(value = "SELECT * FROM user WHERE school_id = ?1", nativeQuery = true)
     User findBySchoolId(String schoolId);
 

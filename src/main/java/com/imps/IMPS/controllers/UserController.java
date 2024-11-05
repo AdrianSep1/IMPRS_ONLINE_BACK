@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +25,11 @@ import com.imps.IMPS.repositories.UserReportRepository;
 import com.imps.IMPS.repositories.UserRepository;
 import com.imps.IMPS.EmailService;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -45,6 +51,9 @@ public class UserController {
     
     @Autowired
     private HomeRepository homeRepository;
+
+    @Autowired
+    private NotificationHandler notificationHandler;
     
     public UserController(EmailService emailService) {
     	this.emailService = emailService;
@@ -119,6 +128,9 @@ public class UserController {
                 createdReport.add(IMPSReport);
                 userReportRepository.save(IMPSReport);
 
+                // Send notification about the new user registration
+                notificationHandler.sendNotification("New user registered: " + firstName + " " + lastName);
+
                 return new UserResponse(true, "User created successfully", null, created);
             }
         } catch(Exception e) {
@@ -126,6 +138,36 @@ public class UserController {
         }
     }
 
+    @DeleteMapping(path = "/deleteUser")
+    public ResponseEntity<ServerResponse> deleteUser(@RequestBody Map<String, String> request) {
+        ServerResponse response = new ServerResponse();
+
+        try {
+            String email = request.get("email");
+            User user = userRepository.findByEmail(email);
+
+            if (user != null) {
+                user.setAdminVerified(false);
+                userRepository.save(user);
+
+                UserReport userReport = userReportRepository.findByEmail(email);
+                userRepository.delete(user);
+                response.setStatus(true);
+                response.setMessage("User has been removed successfully.");
+                return ResponseEntity.ok(response);
+            } else {
+                response.setStatus(false);
+                response.setMessage("User not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.setStatus(false);
+            response.setMessage("Error declining user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    
     @PostMapping(path = "/NewStaffRegistration")
     public @ResponseBody UserResponse addNewStaff(
             @RequestParam String firstName, 
@@ -192,6 +234,47 @@ public class UserController {
         }
     }
     
+    @PutMapping(path = "/updateStaff")
+    public @ResponseBody UserResponse updateStaff(
+            @RequestParam String firstName, 
+            @RequestParam String lastName,
+            @RequestParam(required = false) String password, 
+            @RequestParam String email,  
+            @RequestParam String schoolId,
+            @RequestParam String role 
+    ) {
+        if (!schoolId.matches("\\d{2}-\\d{4}-\\d{3}")) {
+            return new UserResponse(false, "Invalid School ID format!", null, null);
+        }
+
+        try {
+            User existingUser = userRepository.findBySchoolId(schoolId); 
+
+            if (existingUser == null) {
+                return new UserResponse(false, "User not found!", null, null);
+            }
+
+            // Update user fields
+            existingUser.setFirstName(firstName);
+            existingUser.setLastName(lastName);
+            existingUser.setEmail(email);
+            existingUser.setSchoolId(schoolId);
+            existingUser.setRole(role);
+            
+            // Only update the password if it's provided
+            if (password != null && !password.isEmpty()) {
+                existingUser.setPassword(encoder.encode(password));
+            }
+
+            userRepository.save(existingUser); 
+
+            return new UserResponse(true, "Staff updated successfully", null, Arrays.asList(existingUser));
+        } catch(Exception e) {
+            return new UserResponse(false, "Unable to update staff: " + e.getMessage(), null, null);
+        }
+    }
+
+ 
     @PostMapping(path = "/createDefaultUsers")
     public @ResponseBody String createDefaultUsers(@RequestBody Map<String, String> request) {
         try {
