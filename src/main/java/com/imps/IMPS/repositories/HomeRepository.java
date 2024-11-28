@@ -1,7 +1,7 @@
 package com.imps.IMPS.repositories;
 
 import java.util.ArrayList;
-
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -10,9 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.imps.IMPS.models.HomeDetails;
 
 public interface HomeRepository extends CrudRepository<HomeDetails, Integer> {
-	
+		
+	// Correcting the findById method in HomeRepository to use Integer for ID
 	@Query(value = "SELECT * FROM home_details WHERE id = ?1", nativeQuery = true)
-	HomeDetails findByID(Integer ID);
+	Optional<HomeDetails> findById(Integer id);
 	
 	@Query(value = "SELECT * FROM home_details", nativeQuery = true)
 	ArrayList<HomeDetails> getAll();

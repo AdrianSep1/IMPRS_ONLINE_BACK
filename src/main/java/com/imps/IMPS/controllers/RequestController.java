@@ -52,14 +52,14 @@ public class RequestController {
 			@RequestParam("noOfCopies") Integer noOfCopies, @RequestParam("colored") String colored, 
 			@RequestParam("giveExam") Boolean giveExam, @RequestParam("paperSize") String paperSize, @RequestParam("schoolId") String schoolId, @RequestParam("paperType") String paperType,
 			@RequestParam("requestDate") Date requestDate, @RequestParam("useDate") Date useDate, @RequestParam("name") String name, @RequestParam("isHead") Boolean isHead, @RequestParam("isStaff") Boolean isStaff, @RequestParam("isAdmin") Boolean isAdmin,
-			@RequestParam("email") String email, @RequestParam("department") String department, @RequestParam("URL") String downloadURL){
+			@RequestParam("email") String email, @RequestParam("department") String department, @RequestParam("college") String college, @RequestParam("office") String office, @RequestParam("URL") String downloadURL){
 			
 			try{
 
 				User headUser = userRepository.findHeadUser();
 				String headUserID = headUser != null ? headUser.getUserID() : null;
 				
-				PrintingDetails request = new PrintingDetails(userID, requestID, fileName, fileType, desc, noOfCopies, colored, giveExam, paperSize, schoolId, paperType, requestDate, java.time.LocalDateTime.now(), useDate, name, email, department, downloadURL);
+				PrintingDetails request = new PrintingDetails(userID, requestID, fileName, fileType, desc, noOfCopies, colored, giveExam, paperSize, schoolId, paperType, requestDate, java.time.LocalDateTime.now(), useDate, name, email, department, college, office, downloadURL);
 				Notification notification = new Notification(requestID, userID, "New Request Created!", 
 				"You have successfully created a new request and it is currently pending for approval.", 
 				requestDate, role, false, false, false, false);				

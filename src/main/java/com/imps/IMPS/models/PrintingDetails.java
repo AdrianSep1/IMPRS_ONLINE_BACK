@@ -50,13 +50,15 @@ public class PrintingDetails {
 	
 	private String status;
 	private String department;
+	private String office;
+	private String college;
 	
 	private String downloadURL;
 	
 	public PrintingDetails() {}
 
 	
-    public PrintingDetails(String userID, String requestID, String filename, String filetype, String description, Integer noOfCopies, String colored, Boolean giveExam, String paperSize, String schoolId, String paperType, Date requestDate, LocalDateTime requestTime, Date useDate, String name, String email, String department, String downloadURL) {
+    public PrintingDetails(String userID, String requestID, String filename, String filetype, String description, Integer noOfCopies, String colored, Boolean giveExam, String paperSize, String schoolId, String paperType, Date requestDate, LocalDateTime requestTime, Date useDate, String name, String email, String department, String college, String office, String downloadURL) {
         this.setUserID(userID);
         this.setRequestID(requestID);
         this.setFileName(filename);
@@ -74,6 +76,8 @@ public class PrintingDetails {
         this.setRequesterName(name);
         this.setRequesterEmail(email);
         this.setDepartment(department);
+		this.setCollege(college);
+		this.setOffice(office);
         this.setDownloadURL(downloadURL);
         this.setStatus("Pending"); 
     }
@@ -182,9 +186,28 @@ public class PrintingDetails {
 		return department;
 	}
 
+	public void setCollege(String college) {
+		this.college = college;
+	}
+
+
+	public String getCollege() {
+		return college;
+	}
+
+	public void setOffice(String office) {
+		this.office = office;
+	}
+
+
+	public String getOffice() {
+		return office;
+	}
+
 	public void setDepartment(String department) {
 		this.department = department;
 	}
+
 
 	public LocalDateTime getRequestTime() {
 		return requestTime;

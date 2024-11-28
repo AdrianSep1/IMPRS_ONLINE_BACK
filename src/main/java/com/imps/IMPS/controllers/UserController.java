@@ -24,7 +24,7 @@ import com.imps.IMPS.repositories.HomeRepository;
 import com.imps.IMPS.repositories.UserReportRepository;
 import com.imps.IMPS.repositories.UserRepository;
 import com.imps.IMPS.EmailService;
-
+import java.util.Optional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +36,6 @@ import java.util.Map;
 @RequestMapping(path = "/services")
 
 public class UserController {
-
 
     @Autowired
     private UserRepository userRepository;
@@ -73,9 +72,6 @@ public class UserController {
             @RequestParam(required = false) String department,
             @RequestParam(required = false) String office
     ) {
-        if (!schoolId.matches("\\d{2}-\\d{4}-\\d{3}")) {
-            return new UserResponse(false, "Invalid School ID format!", null, null);
-        }
 
         try {
             String token = UUID.randomUUID().toString().replaceAll("-", "");
@@ -177,10 +173,6 @@ public class UserController {
             @RequestParam String schoolId,
             @RequestParam String role 
     ) {
-        if (!schoolId.matches("\\d{2}-\\d{4}-\\d{3}")) {
-            return new UserResponse(false, "Invalid School ID format!", null, null);
-        }
-
         try {
             String token = UUID.randomUUID().toString().replaceAll("-", "");
 
@@ -572,40 +564,108 @@ public class UserController {
     	return true;
     }
 
+    // @PostMapping(path = "/createHome")
+    // public @ResponseBody boolean setHome(@RequestBody HomeDetails homeDetails) {
+    //     HomeDetails home = new HomeDetails(homeDetails.getAnnouncements(), homeDetails.getGuidelines(), homeDetails.getProcess(), homeDetails.getLocations(), homeDetails.getUpdates());
+    //     homeRepository.save(home);
+    //     return true;
+    // }
 
-    @PostMapping(path = "/createHome")
-    public @ResponseBody boolean setHome(@RequestParam String ann, @RequestParam String guide, @RequestParam String loc,
-    		@RequestParam String pro, @RequestParam String upd) {
-    		HomeDetails home = new HomeDetails(ann,guide,pro,loc,upd);
-        	homeRepository.save(home);
-        	return true;
-    }
+    // @PostMapping(path = "/editHome")
+    // public @ResponseBody HomeDetails editHome(@RequestBody HomeDetails homeDetails) {
+    //     homeRepository.setAnnouncements(homeDetails.getAnnouncements(), 1);
+    //     homeRepository.setGuidelines(homeDetails.getGuidelines(), 1);
+    //     homeRepository.setLocations(homeDetails.getLocations(), 1);
+    //     homeRepository.setProcess(homeDetails.getProcess(), 1);
+    //     homeRepository.setUpdates(homeDetails.getUpdates(), 1);
+    //     return homeRepository.findByID(1);
+    // }
+
+    // @GetMapping(path = "/getHome")
+    // public @ResponseBody HomeDetails getHome() {
+    // 	return homeRepository.findByID(homeRepository.getAll().size());
+    // }
+
+    // @GetMapping(path = "/user_count")
+    // public @ResponseBody Integer getUserCount() {
+    // 	return userRepository.countAllUsers();
+    // }
     
-    @GetMapping(path = "/getHome")
-    public @ResponseBody HomeDetails getHome() {
-    	return homeRepository.findByID(homeRepository.getAll().size());
+    // @GetMapping(path = "/getHomeNumber")
+    // public @ResponseBody Integer getHomeNumber() {
+    // 	return homeRepository.getAll().size();
+    // }
+
+    // Method to update the home details
+    @PutMapping(path = "/updateHomeDetails")
+    public @ResponseBody ServerResponse updateHomeDetails(@RequestBody Map<String, String> request) {
+        ServerResponse response = new ServerResponse();
+
+        try {
+            // Retrieve the details from the request
+            String ann = request.get("ann");
+            String guide = request.get("guide");
+            String pro = request.get("pro");
+            String loc = request.get("loc");
+            String upd = request.get("upd");
+
+            // Check if HomeDetails record already exists (assuming "1" as the unique ID for home details)
+            Optional<HomeDetails> optionalHomeDetails = homeRepository.findById(1);
+
+            if (optionalHomeDetails.isPresent()) {
+                // Update existing details
+                HomeDetails homeDetails = optionalHomeDetails.get();
+                homeDetails.setAnnouncements(ann);
+                homeDetails.setGuidelines(guide);
+                homeDetails.setProcess(pro);
+                homeDetails.setLocations(loc);
+                homeDetails.setUpdates(upd);
+
+                // Save the updated details
+                homeRepository.save(homeDetails);
+
+                response.setStatus(true);
+                response.setMessage("Home details updated successfully.");
+            } else {
+                // If no existing details, create a new record
+                HomeDetails homeDetails = new HomeDetails();
+                homeDetails.setId("1"); // Set the ID to a fixed value (or generate a new one)
+                homeDetails.setAnnouncements(ann);
+                homeDetails.setGuidelines(guide);
+                homeDetails.setProcess(pro);
+                homeDetails.setLocations(loc);
+                homeDetails.setUpdates(upd);
+
+                // Save the new details
+                homeRepository.save(homeDetails);
+
+                response.setStatus(true);
+                response.setMessage("Home details created successfully.");
+            }
+        } catch (Exception e) {
+            response.setStatus(false);
+            response.setMessage("Error updating home details: " + e.getMessage());
+        }
+
+        return response;
     }
 
-    @GetMapping(path = "/user_count")
-    public @ResponseBody Integer getUserCount() {
-    	return userRepository.countAllUsers();
+    // Method to retrieve the home details
+    @GetMapping(path = "/getHomeDetails")
+    public @ResponseBody HomeDetails getHomeDetails() {
+        try {
+            // Fetch the home details (assuming "1" is the ID for the HomeDetails)
+            Optional<HomeDetails> optionalHomeDetails = homeRepository.findById(1);
+
+            if (optionalHomeDetails.isPresent()) {
+                return optionalHomeDetails.get();
+            } else {
+                return null; // Or return an empty object with default values
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Handle error (e.g., return an empty response or error message)
+        }
     }
-    
-    @GetMapping(path = "/getHomeNumber")
-    public @ResponseBody Integer getHomeNumber() {
-    	return homeRepository.getAll().size();
-    }
-    
-    @PostMapping(path = "/editHome")
-    public @ResponseBody HomeDetails editHome(@RequestParam String ann, @RequestParam String guide, @RequestParam String loc,
-    		@RequestParam String pro, @RequestParam String upd) {
-    	homeRepository.setAnnouncements(ann, 1);
-    	homeRepository.setGuidelines(guide, 1);
-    	homeRepository.setLocations(loc, 1);
-    	homeRepository.setProcess(pro, 1);
-    	homeRepository.setUpdates(upd, 1);
-    	return homeRepository.findByID(1);
-    }
-    
 
 }
