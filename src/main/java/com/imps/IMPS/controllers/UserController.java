@@ -262,7 +262,7 @@ public class UserController {
     ) {
 
         try {
-            User existingUser = userRepository.findById(id); 
+            User existingUser = userRepository.findBySchoolId(schoolId); 
 
             if (existingUser == null) {
                 return new UserResponse(false, "User not found!", null, null);
