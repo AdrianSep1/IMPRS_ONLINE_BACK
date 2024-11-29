@@ -59,12 +59,12 @@ public class RequestController {
 				User headUser = userRepository.findHeadUser();
 				String headUserID = headUser != null ? headUser.getUserID() : null;
 				
-				PrintingDetails request = new PrintingDetails(userID, requestID, fileName, fileType, desc, noOfCopies, colored, giveExam, paperSize, schoolId, paperType, requestDate, java.time.LocalDateTime.now(), useDate, name, email, department, college, office, downloadURL);
+				PrintingDetails request = new PrintingDetails(userID, requestID, fileName, fileType, desc, noOfCopies, colored, giveExam, paperSize, schoolId, paperType, requestDate, java.time.LocalDateTime.now(), useDate, name, email, department, college, office, role, downloadURL);
 				Notification notification = new Notification(requestID, userID, "New Request Created!", 
 				"You have successfully created a new request and it is currently pending for approval.", 
 				requestDate, role, false, false, false, false);				
 		
-				PrintingRecord newRecord = new PrintingRecord(schoolId, requestID, fileType, fileName, requestDate, useDate, "Pending");
+				PrintingRecord newRecord = new PrintingRecord(name, schoolId, requestID, fileType, fileName, requestDate, useDate, "Pending");
 				
 				Notification adminNotification = new Notification(requestID, headUserID, "New Request Submitted!", 
                 "A new request has been submitted and is currently waiting for approval.", 

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.imps.IMPS.repositories.NotificationRepository;
 
 import com.imps.IMPS.models.HomeDetails;
 import com.imps.IMPS.models.ServerResponse;
@@ -28,8 +29,11 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.imps.IMPS.models.Notification;
 import java.util.Map;
+import java.sql.Date;
+import java.time.LocalDate;
+
 
 @CrossOrigin
 @RestController
@@ -53,7 +57,10 @@ public class UserController {
 
     @Autowired
     private NotificationHandler notificationHandler;
-    
+
+    @Autowired
+	private NotificationRepository notificationRepository;
+	
     public UserController(EmailService emailService) {
     	this.emailService = emailService;
     }
@@ -76,26 +83,17 @@ public class UserController {
         try {
             String token = UUID.randomUUID().toString().replaceAll("-", "");
 
+            // Check if the email already exists
             if(userRepository.findByEmail(email) != null) {
                 return new UserResponse(false, "User email already exists!", null, null);
             } else {
                 List<User> created = new ArrayList<>();
                 List<UserReport> createdReport = new ArrayList<>();
 
-                String month;
-                String userNumber;
-
-                month = String.format("%02d", LocalDate.now().getMonthValue());
+                // Generate userID based on the current date and user count
+                String month = String.format("%02d", LocalDate.now().getMonthValue());
                 int userCount = userRepository.getAll().size();
-
-                if (userCount < 10) {
-                    userNumber = "00" + (userCount + 1);
-                } else if (userCount < 100) {
-                    userNumber = "0" + (userCount + 1);
-                } else {
-                    userNumber = Integer.toString(userCount + 1);
-                }
-
+                String userNumber = (userCount < 10) ? "00" + (userCount + 1) : (userCount < 100) ? "0" + (userCount + 1) : Integer.toString(userCount + 1);
                 String userID = LocalDate.now().getYear() + month + userNumber;
 
                 // Create and set user details
@@ -124,15 +122,42 @@ public class UserController {
                 createdReport.add(IMPSReport);
                 userReportRepository.save(IMPSReport);
 
+                // Get the admin user details for notification
+                User adminUser = userRepository.findAdminUser();
+                String adminUserId = adminUser != null ? adminUser.getUserID() : null;
+
+                // Generate a random adminNotifId like Reg105
+                String adminNotifId = "Reg" + (int)(Math.random() * 1000);  // Generates a number between 0-999
+
+                // Get the current date and convert it to java.sql.Date
+                java.sql.Date createdDate = java.sql.Date.valueOf(LocalDate.now());
+
                 // Send notification about the new user registration
                 notificationHandler.sendNotification("New user registered: " + firstName + " " + lastName);
 
+                // Create and save admin notification
+                Notification adminNotification = new Notification(
+                        adminNotifId, 
+                        adminUserId, 
+                        "New User Registration!", 
+                        "A new registration has been created and is currently waiting for approval.", 
+                        createdDate, 
+                        "admin", 
+                        false, 
+                        false, 
+                        false, 
+                        true
+                );    
+                notificationRepository.save(adminNotification);
+
+                // Return success response
                 return new UserResponse(true, "User created successfully", null, created);
             }
         } catch(Exception e) {
             return new UserResponse(false, "Unable to create new user.", null, null);
         }
     }
+
 
     @DeleteMapping(path = "/deleteUser")
     public ResponseEntity<ServerResponse> deleteUser(@RequestBody Map<String, String> request) {
@@ -235,12 +260,9 @@ public class UserController {
             @RequestParam String schoolId,
             @RequestParam String role 
     ) {
-        if (!schoolId.matches("\\d{2}-\\d{4}-\\d{3}")) {
-            return new UserResponse(false, "Invalid School ID format!", null, null);
-        }
 
         try {
-            User existingUser = userRepository.findBySchoolId(schoolId); 
+            User existingUser = userRepository.findById(id); 
 
             if (existingUser == null) {
                 return new UserResponse(false, "User not found!", null, null);

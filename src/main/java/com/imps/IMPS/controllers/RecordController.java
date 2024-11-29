@@ -120,7 +120,7 @@ public class RecordController {
 			@RequestParam("requestDate") Date requestDate, @RequestParam("useDate") Date useDate){
 	   
 			try{
-				PrintingRecord newRecord = new PrintingRecord(userID, requestID, fileType, fileName, requestDate, useDate, "Pending");
+				PrintingRecord newRecord = new PrintingRecord(" ", userID, requestID, fileType, fileName, requestDate, useDate, "Pending");
 				
 			recordRepository.save(newRecord);
 			

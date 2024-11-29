@@ -15,6 +15,7 @@ public class PrintingRecord {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
 	
+	private String name;
 	private String userID;
 	
 	private String requestID;
@@ -33,7 +34,8 @@ public class PrintingRecord {
 	
 	public PrintingRecord () {}
 	
-	public PrintingRecord (String userID, String requestID, String fileType, String fileName, Date requestDate, Date useDate, String status) {
+	public PrintingRecord (String name, String userID, String requestID, String fileType, String fileName, Date requestDate, Date useDate, String status) {
+		this.setRequestersName(name);
 		this.setUserID(userID);
 		this.setRequestID(requestID);
 		this.setFileType(fileType);
@@ -43,6 +45,13 @@ public class PrintingRecord {
 		this.setStatus(status);
 	}
 
+	public String getRequestersName() {
+		return name;
+	}
+
+	public void setRequestersName(String name) {
+		this.name = name;
+	}
 	public String getRequestID() {
 		return requestID;
 	}
