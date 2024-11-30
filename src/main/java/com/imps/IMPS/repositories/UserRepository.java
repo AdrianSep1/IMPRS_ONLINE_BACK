@@ -17,7 +17,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     
     @Query(value = "SELECT * FROM user WHERE is_head = 1", nativeQuery = true)
     User findHeadUser();
-    
+
     @Query(value = "SELECT * FROM user WHERE is_admin = 1", nativeQuery = true)
     User findAdminUser();
     
@@ -38,7 +38,9 @@ public interface UserRepository extends CrudRepository<User, Integer> {
        
     @Query(value = "SELECT * FROM user WHERE id = ?1", nativeQuery = true)
     User findById(String id);
-          
+
+    @Query(value = "SELECT * FROM user WHERE id = ?1", nativeQuery = true)
+    User findStaffId(String id);
 
     @Query("SELECT u FROM User u")
     List<User> getAll();

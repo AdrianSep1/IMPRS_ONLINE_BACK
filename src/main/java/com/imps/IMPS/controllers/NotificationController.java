@@ -12,7 +12,7 @@ import com.imps.IMPS.EmailService;
 import com.imps.IMPS.models.Notification;
 import com.imps.IMPS.repositories.NotificationRepository;
 
-@CrossOrigin(origins = "https://imprs-online.vercel.app/")
+@CrossOrigin(origins = "https://imprs-online.vercel.app")
 @RestController
 @RequestMapping(path = "/notifications")
 public class NotificationController {

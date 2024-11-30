@@ -253,6 +253,7 @@ public class UserController {
     
     @PutMapping(path = "/updateStaff")
     public @ResponseBody UserResponse updateStaff(
+            @RequestParam String id, 
             @RequestParam String firstName, 
             @RequestParam String lastName,
             @RequestParam(required = false) String password, 
@@ -262,7 +263,7 @@ public class UserController {
     ) {
 
         try {
-            User existingUser = userRepository.findBySchoolId(schoolId); 
+            User existingUser = userRepository.findStaffId(id); 
 
             if (existingUser == null) {
                 return new UserResponse(false, "User not found!", null, null);
