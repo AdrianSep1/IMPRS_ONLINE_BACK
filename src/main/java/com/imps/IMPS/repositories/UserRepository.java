@@ -12,6 +12,11 @@ import com.imps.IMPS.models.User;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE USER u SET u.password = ?1 WHERE EMAIL = ?2", nativeQuery = true)
+    int setNewPasswordNoToken(String password, String email);
+
     @Query(value = "SELECT * FROM user WHERE email = ?1 AND password = ?2", nativeQuery = true)
     User findByEmailAndPassword(String email, String password);
     
@@ -67,10 +72,10 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     @Query(value = "UPDATE user SET password = ?1 WHERE email = ?2 AND token = ?3", nativeQuery = true)
     int setNewPassword(String password, String email, String token);
     
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE user SET password = ?1 WHERE email = ?2", nativeQuery = true)
-    int setNewPasswordNoToken(String password, String email);
+    // @Modifying
+    // @Transactional
+    // @Query(value = "UPDATE user SET password = ?1 WHERE email = ?2", nativeQuery = true)
+    // int setNewPasswordNoToken(String password, String email);
     
     @Modifying
     @Transactional

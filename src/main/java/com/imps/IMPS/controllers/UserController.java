@@ -510,6 +510,8 @@ public class UserController {
             @RequestParam String password) {
         ServerResponse Response = new ServerResponse();
         User user = userRepository.findByEmail(email);
+        String encodedPassword = encoder.encode(password);
+        System.out.println("Encoded password: " + encodedPassword); // Check the encoded password
         if(user != null) {
             if(encoder.matches(password, user.getPassword())) {
                 if(user.getRole().equals("admin")) {
@@ -592,12 +594,43 @@ public class UserController {
     	return true;
     }
 
-    @PostMapping(path = "/newPassword")
-    public @ResponseBody boolean setPassword(@RequestParam String email, @RequestParam String password) {
-    	userRepository.setNewPasswordNoToken(encoder.encode(password), email);
-    	emailService.sendEmail(email, "IMPS Password Change","Hello, your password has been successfully changed.");
-    	return true;
+    @PutMapping(path = "/newPassword")
+    public @ResponseBody UserResponse updatePassword(
+            @RequestParam String firstName, 
+            @RequestParam String lastName,
+            @RequestParam(required = false) String password, 
+            @RequestParam String email,  
+            @RequestParam String schoolId,
+            @RequestParam String role 
+    ) {
+
+        try {
+            User existingUser = userRepository.findByEmail(email); 
+
+            if (existingUser == null) {
+                return new UserResponse(false, "User not found!", null, null);
+            }
+
+            // Update user fields
+            existingUser.setFirstName(firstName);
+            existingUser.setLastName(lastName);
+            existingUser.setEmail(email);
+            existingUser.setSchoolId(schoolId);
+            existingUser.setRole(role);
+            
+            // Only update the password if it's provided
+            if (password != null && !password.isEmpty()) {
+                existingUser.setPassword(encoder.encode(password));
+            }
+
+            userRepository.save(existingUser); 
+
+            return new UserResponse(true, "Staff updated successfully", null, Arrays.asList(existingUser));
+        } catch(Exception e) {
+            return new UserResponse(false, "Unable to update staff: " + e.getMessage(), null, null);
+        }
     }
+
 
     @PostMapping(path = "/newEmail")
     public @ResponseBody boolean setEmail(@RequestParam String newEmail, @RequestParam String email) {
