@@ -199,4 +199,17 @@ public class RecordController {
     	return true;
     }
 
+    @PostMapping(path = "/claimedStatus")
+    public @ResponseBody boolean setClaimed(@RequestParam String requestID,
+    		@RequestParam String status, @RequestParam String email, @RequestParam String userID, @RequestParam String role,
+    		@RequestParam Date date) {
+    	
+    	recordRepository.setNewStatus(requestID, status);
+    	emailService.sendEmail(email, "IMPS | Request #" + requestID + " Status Update","Hello, your printing request with ID #" + requestID + " is now claimed. Thank you for using our service.");
+    	Notification notification = new Notification(requestID, userID, "Request Claimed!", "Your request has been claimed. Thank you for using our service.", date, role,  false, false, false, false);
+    	notificationRepository.save(notification);
+    	
+    	return true;
+    }
+
 }
