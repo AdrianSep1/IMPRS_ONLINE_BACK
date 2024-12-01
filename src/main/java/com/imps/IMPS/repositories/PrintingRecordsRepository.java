@@ -14,6 +14,13 @@ import com.imps.IMPS.models.PrintingRecord;
 
 public interface PrintingRecordsRepository extends CrudRepository<PrintingRecord, Integer> {
 	
+
+
+	@Modifying
+	@Transactional
+	@Query(value = "DELETE FROM printing_record WHERE userid = ?1", nativeQuery = true)
+	void deleteByUserId(String userId);
+
     @Query("SELECT pr FROM PrintingRecord pr WHERE pr.requestDate = :requestDate")
     List<PrintingRecord> findByRequestDate(@Param("requestDate") Date requestDate);
 	

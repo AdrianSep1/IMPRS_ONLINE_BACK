@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import com.imps.IMPS.models.User;
 import com.imps.IMPS.models.UserReport;
 import com.imps.IMPS.models.UserResponse;
 import com.imps.IMPS.repositories.HomeRepository;
+import com.imps.IMPS.repositories.PrintingRecordsRepository;
+import com.imps.IMPS.repositories.PrintingDetailsRepository;
 import com.imps.IMPS.repositories.UserReportRepository;
 import com.imps.IMPS.repositories.UserRepository;
 import com.imps.IMPS.EmailService;
@@ -41,6 +45,9 @@ import java.time.LocalDate;
 
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+
     @Autowired
     private UserRepository userRepository;
 
@@ -54,6 +61,12 @@ public class UserController {
     
     @Autowired
     private HomeRepository homeRepository;
+
+    @Autowired
+    private PrintingDetailsRepository printingDetailsRepository;
+
+    @Autowired
+    private PrintingRecordsRepository printingRecordsRepository;
 
     @Autowired
     private NotificationHandler notificationHandler;
@@ -158,8 +171,7 @@ public class UserController {
         }
     }
 
-
-    @DeleteMapping(path = "/deleteUser")
+   @DeleteMapping(path = "/deleteUser")
     public ResponseEntity<ServerResponse> deleteUser(@RequestBody Map<String, String> request) {
         ServerResponse response = new ServerResponse();
 
@@ -168,13 +180,25 @@ public class UserController {
             User user = userRepository.findByEmail(email);
 
             if (user != null) {
+                // Fetch the school ID (which is the same as user ID in printing records)
+                String schoolId = user.getSchoolId(); // Assuming getSchoolId() exists
+
+                // Delete associated printing details
+                printingDetailsRepository.deleteBySchoolId(schoolId);
+
+                // Delete associated printing records using userId
+                printingRecordsRepository.deleteByUserId(schoolId);
+
+                // Log deletions
+                logger.info("Deleted printing details and printing records for user with ID {}", schoolId);
+
+                // Delete the user
                 user.setAdminVerified(false);
                 userRepository.save(user);
 
-                UserReport userReport = userReportRepository.findByEmail(email);
                 userRepository.delete(user);
                 response.setStatus(true);
-                response.setMessage("User has been removed successfully.");
+                response.setMessage("User and all associated records have been removed successfully.");
                 return ResponseEntity.ok(response);
             } else {
                 response.setStatus(false);
@@ -182,11 +206,14 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } catch (Exception e) {
+            logger.error("Error while removing user: ", e);
             response.setStatus(false);
-            response.setMessage("Error declining user: " + e.getMessage());
+            response.setMessage("Error removing user: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+
 
     
     @PostMapping(path = "/NewStaffRegistration")
