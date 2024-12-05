@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.imps.IMPS.EmailService;
 import com.imps.IMPS.models.Notification;
 import com.imps.IMPS.models.PrintingRecord;
+import com.imps.IMPS.models.PrintingDetails;
 import com.imps.IMPS.models.RecordResponse;
 import com.imps.IMPS.models.User;
 import com.imps.IMPS.repositories.NotificationRepository;
 import com.imps.IMPS.repositories.PrintingRecordsRepository;
+import com.imps.IMPS.repositories.PrintingDetailsRepository;
 import com.imps.IMPS.repositories.UserRepository;
 
 @CrossOrigin
@@ -43,6 +45,9 @@ public class RecordController {
     private PrintingRecordsRepository recordRepository;
     private EmailService emailService;
     
+	@Autowired
+    private PrintingDetailsRepository printingDetailsRepository;
+
 	@Autowired
     private UserRepository userRepository;
 
@@ -123,7 +128,6 @@ public class RecordController {
 				PrintingRecord newRecord = new PrintingRecord(" ", userID, requestID, fileType, fileName, requestDate, useDate, "Pending");
 				
 			recordRepository.save(newRecord);
-			
 			List<PrintingRecord> Created = new ArrayList<>();
 			Created.add(newRecord);
 			
@@ -141,6 +145,7 @@ public class RecordController {
     		@RequestParam Date date) {
 
     	recordRepository.setNewStatus(requestID, status);
+		printingDetailsRepository.setNewStatus(requestID, status);
     	emailService.sendEmail(email, "IMPS | Request #" + requestID + " Status Update","Hello, your printing request with ID #" + requestID + " has been REJECTED. Please check the comment under the request details regarding why.");
     	Notification notification = new Notification(requestID, userID, "Request Rejected!", "Please check the most recent comment on your request to know why your request was rejected.", date, role, false, false, false, false);
     	notificationRepository.save(notification);
@@ -156,7 +161,7 @@ public class RecordController {
 		
 		// Update the request status
 		recordRepository.setNewStatus(requestID, status);
-		
+		printingDetailsRepository.setNewStatus(requestID, status);
 		// Send email to the user
 		emailService.sendEmail(email, "IMPS | Request #" + requestID + " Status Update",
 			"Hello, your printing request with ID #" + requestID + " is now IN PROGRESS. Please wait until the request is completed.");
@@ -192,6 +197,7 @@ public class RecordController {
     		@RequestParam Date date) {
     	
     	recordRepository.setNewStatus(requestID, status);
+		printingDetailsRepository.setNewStatus(requestID, status);
     	emailService.sendEmail(email, "IMPS | Request #" + requestID + " Status Update","Hello, your printing request with ID #" + requestID + " is now COMPLETE. Please be advised to proceed to office for claiming your request");
     	Notification notification = new Notification(requestID, userID, "Request Complete!", "Youre request is now in Complete. Please be advised to proceed to office for claiming your request", date, role, false, false, false, false);
     	notificationRepository.save(notification);
@@ -208,6 +214,7 @@ public class RecordController {
     		@RequestParam Date date) {
     	
     	recordRepository.setNewStatus(requestID, status);
+		printingDetailsRepository.setNewStatus(requestID, status);
     	emailService.sendEmail(email, "IMPS | Request #" + requestID + " Status Update","Hello, your printing request with ID #" + requestID + " has been CLAIMED.");
     	Notification notification = new Notification(requestID, userID, "Request Claimed!", "Youre request has been claimed already.", date, role, false, false, false, false);
     	notificationRepository.save(notification);

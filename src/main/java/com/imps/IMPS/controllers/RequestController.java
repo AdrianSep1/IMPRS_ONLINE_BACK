@@ -96,6 +96,15 @@ public class RequestController {
         return printingDetailsRepository.findByID(id, fileName);
     }
 	
+	@GetMapping(path = "/all")
+	public @ResponseBody List<PrintingDetails> getAllRequests() {
+		return printingDetailsRepository.findAll();
+	}
+
+    @GetMapping(path = "/pending")
+    public @ResponseBody Iterable<PrintingDetails> getPending() {
+        return printingDetailsRepository.findPending();
+    }
 	@GetMapping(path = "/getModuleCopies")
     public @ResponseBody Integer getModuleCopies(String dates) {
     	Integer total = 0;
